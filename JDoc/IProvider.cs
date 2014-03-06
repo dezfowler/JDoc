@@ -24,5 +24,8 @@ namespace JDoc
         Document Load(DocumentIdentifier id);
     }
 
+    public interface IContainTypedDocuments<TContent>
+    {
 
+    }
 }

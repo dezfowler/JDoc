@@ -10,8 +10,6 @@ namespace JDoc.Commands
             get { return CommandType.StoreDocument; }
         }
 
-        public string CollectionName { get; set; }
-
         public Document Document { get; set; }
 
         public override Task<Result> Accept(ICommandVisitor visitor)
@@ -21,7 +19,13 @@ namespace JDoc.Commands
 
         public override Document HandleResult(Task<Result> task)
         {
-            return ((DocumentResult)task.Result).Document;
+            var documentResult = task.Result as DocumentResult;
+            if (documentResult != null)
+            {
+                return documentResult.Document;
+            }
+
+            return HandleOtherResults(task.Result);
         }
     }
 }

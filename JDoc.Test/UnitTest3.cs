@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using JDoc.Client;
 using Newtonsoft.Json.Linq;
 using JDoc.Commands;
 using System.Collections.Generic;

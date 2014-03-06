@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace JDoc
 {
@@ -21,9 +22,11 @@ namespace JDoc
             return new DocumentMeta
                        {
                            Id = Id,
+                           Name = Name,
                            RevisionEtag = RevisionEtag,
                            Created = Created,
                            Modified = Modified,
+                           Tags = Tags == null ? null : new List<string>(Tags).ToArray(),
                        };
         }
     }

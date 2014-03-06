@@ -30,15 +30,15 @@ namespace JDoc.Typed
 
             _serializer.Serialize(writer, value);
         }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            return _serializer.Deserialize(reader, objectType);
-        }
-
+        
         public override bool CanConvert(Type objectType)
         {
             return DocumentReferenceType.IsAssignableFrom(objectType);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            return serializer.Deserialize(reader, objectType);
         }
     }
 }

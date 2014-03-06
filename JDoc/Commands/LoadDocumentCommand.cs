@@ -7,8 +7,13 @@ namespace JDoc.Commands
     {
         public override Document HandleResult(Task<Result> task)
         {
-            // not doing anything special here at the moment
-            return ((DocumentResult)task.Result).Document;
+            var documentResult = task.Result as DocumentResult;
+            if (documentResult != null)
+            {
+                return documentResult.Document;
+            }
+
+            return HandleOtherResults(task.Result);
         }
 
         public override CommandType Type
@@ -18,8 +23,6 @@ namespace JDoc.Commands
 
         public DocumentIdentifier Id { get; set; }
 
-        public Guid? Revision { get; set; }
-        
         public override Task<Result> Accept(ICommandVisitor visitor)
         {
             return visitor.Visit(this);

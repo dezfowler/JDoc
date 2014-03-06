@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JDoc.Test", "JDoc.Test\JDoc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JDoc.SqlServer.Test", "JDoc.SqlServer.Test\JDoc.SqlServer.Test.csproj", "{35A1334D-691D-468D-9035-77BB849D358B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JDoc.Specs", "JDoc.Specs\JDoc.Specs.csproj", "{D2086CA2-8B7A-481E-947E-75FA6D709AEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{35A1334D-691D-468D-9035-77BB849D358B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35A1334D-691D-468D-9035-77BB849D358B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35A1334D-691D-468D-9035-77BB849D358B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2086CA2-8B7A-481E-947E-75FA6D709AEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2086CA2-8B7A-481E-947E-75FA6D709AEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2086CA2-8B7A-481E-947E-75FA6D709AEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2086CA2-8B7A-481E-947E-75FA6D709AEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

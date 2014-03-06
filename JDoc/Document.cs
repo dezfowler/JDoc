@@ -32,4 +32,13 @@ namespace JDoc
             };
         }
     }
+
+    public class DocumentFragment
+    {
+        public DocumentMeta ParentMeta { get; set; }
+
+        public string Path { get; set; }
+
+        public JToken Content { get; set; }
+    }
 }

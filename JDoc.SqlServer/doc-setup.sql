@@ -69,9 +69,9 @@ BEGIN TRY
 		DECLARE @DbDocRev uniqueidentifier = NULL
 		DECLARE @HasHistory bit
 		DECLARE @Created datetime2
-		DECLARE @RevTable TABLE (RevisionEtag uniqueidentifier, Modified datetime2)
+		DECLARE @RevTable TABLE (RevisionEtag uniqueidentifier, Modified datetime2, Content xml)
 
-		IF @DocumentId <> @EmptyGuid OR @FriendlyId IS NOT NULL
+		IF @DocumentId <> @EmptyGuid OR @FriendlyId IS NOT NULL 
 		BEGIN 
 			INSERT INTO @DocTable
 			SELECT 
@@ -80,17 +80,25 @@ BEGIN TRY
 				Created
 			FROM Document
 			WHERE (DocumentId = @DocumentId OR @DocumentId = @EmptyGuid) 
-			AND (@FriendlyId IS NULL OR @FriendlyId = FriendlyId)
-						
+			AND (@FriendlyId IS NULL OR @FriendlyId = CalculatedId)
+			
+			IF @@ROWCOUNT > 1
+			BEGIN
+				-- The identifiers supplied were for different documents
+				SELECT 'IdentifierMismatch'
+				RETURN 3
+			END
+
 			SELECT 
 				@DbDocId = DocumentId,
 				@DbFriendlyId = CalculatedId,
 				@Created = Created
 			FROM @DocTable
 
-			IF @DbDocId IS NULL 
+			IF @DocumentId <> @EmptyGuid AND @DbDocId IS NULL 
 			BEGIN
-				RAISERROR ('Document not found', 11, 1)
+				SELECT 'NotFound'
+				RETURN 1
 			END 
 		END
 
@@ -105,23 +113,22 @@ BEGIN TRY
 		BEGIN
 			SELECT TOP 1 @DbDocRev = RevisionEtag
 			FROM DocumentRevision 
-			WHERE DocumentId = @DocumentId
+			WHERE DocumentId = @DbDocId
 			ORDER BY RevisionEtag DESC
 		END
 		
 		IF @DbDocRev IS NOT NULL AND @RevisionEtag <> @DbDocRev
 		BEGIN
-			RAISERROR ('Document changed - revision etag mismatch', 11, 1)
+			SELECT 'RevisionMismatch', @DbDocRev AS Expected, @RevisionEtag AS Actual
+			RETURN 2
 		END
 		
 		INSERT INTO DocumentRevision (DocumentId, Modified, Content)
-		OUTPUT inserted.RevisionEtag, inserted.Modified INTO @RevTable
+		OUTPUT inserted.RevisionEtag, inserted.Modified, inserted.Content INTO @RevTable
 		SELECT DocumentId, SYSUTCDATETIME(), @Content
 		FROM @DocTable
 		
-		SET NOCOUNT OFF
-
-		SELECT DocumentId, CalculatedId, RevisionEtag, Created, Modified
+		SELECT 'Document', DocumentId, CalculatedId, RevisionEtag, Created, Modified, Content
 		FROM @DocTable, @RevTable
 
 	COMMIT TRAN
@@ -158,38 +165,51 @@ GO
 
 
 CREATE PROC LoadDocument
-	@DocumentId uniqueidentifier,
+	@DocumentId uniqueidentifier = NULL,
+	@FriendlyId varchar(256) = NULL,
 	@Revision uniqueidentifier = NULL
 AS
 BEGIN
 
 SET TRANSACTION ISOLATION LEVEL READ COMMITTED
 SET XACT_ABORT ON
+SET NOCOUNT ON
 
 BEGIN TRY
 	BEGIN TRAN	
-
-		SET NOCOUNT ON
 
 		DECLARE @DbDocId uniqueidentifier
 		DECLARE @DbFriendlyId varchar(256)
 		DECLARE @Created datetime2
 
+		IF @DocumentId IS NULL AND @FriendlyId IS NULL
+		BEGIN
+			-- This is an error, should catch this in code
+			RAISERROR ('Document ID or Friendly ID must be provided', 11, 1)
+		END
+		
 		SELECT 
 			@DbDocId = DocumentId,
 			@DbFriendlyId = CalculatedId,
 			@Created = Created
 		FROM Document
-		WHERE DocumentId = @DocumentId
-
-		SET NOCOUNT OFF
+		WHERE (@DocumentId IS NULL OR DocumentId = @DocumentId) 
+		AND (@FriendlyId IS NULL OR @FriendlyId = CalculatedId)
 
 		IF @DbDocId IS NULL
 		BEGIN
-			RAISERROR ('Document missing', 11, 1)
+			SELECT 'NotFound'
+			RETURN 1
 		END
 
-		SELECT TOP 1 @DbDocId DocumentId, @DbFriendlyId FriendlyId, RevisionEtag, @Created Created, Modified, Content 
+		IF @@ROWCOUNT > 1
+		BEGIN
+			-- The identifiers supplied were for different documents
+			SELECT 'IdentifierMismatch'
+			RETURN 3
+		END
+		
+		SELECT TOP 1 'Document', @DbDocId DocumentId, @DbFriendlyId FriendlyId, RevisionEtag, @Created Created, Modified, Content 
 		FROM DocumentRevision 
 		WHERE DocumentId = @DbDocId AND (@Revision IS NULL OR @Revision = RevisionEtag)
 		ORDER BY RevisionEtag DESC

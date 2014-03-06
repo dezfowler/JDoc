@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DocumentCollections\CollectionMeta.cs" />
     <Compile Include="DocumentCollections\CollectionSettings.cs" />
     <Compile Include="DocumentCollections\DocumentCollectionExtensions.cs" />
     <Compile Include="JObjectExtensions.cs" />
@@ -75,9 +76,10 @@
     <Compile Include="Result.cs" />
     <Compile Include="RevisionConflictResult.cs" />
     <Compile Include="Revisions.cs" />
-    <Compile Include="Typed\TypedClient.cs" />
+    <Compile Include="Typed\TypedProviderExtensions.cs" />
     <Compile Include="Typed\TypedDocument.cs" />
     <Compile Include="Typed\TypedDocumentCollection.cs" />
+    <Compile Include="UnexpectedResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

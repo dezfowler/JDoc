@@ -32,7 +32,7 @@ namespace JDoc.Commands
             switch(PatchType)
             {
                 case PatchCommandType.Add:
-                    token.AddAfterSelf(Value);
+                    ((JContainer)token).Add(Value);
                     break;
 
                 case PatchCommandType.Remove:

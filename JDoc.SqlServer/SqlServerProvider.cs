@@ -4,7 +4,6 @@ using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using JDoc.Client;
 using JsonXml;
 using Newtonsoft.Json.Linq;
 
